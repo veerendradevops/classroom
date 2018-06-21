@@ -1,0 +1,26 @@
+1. Can we run multiple processes in single container?
+
+
+2. Do you think Docker is an application-centric or Machine-centric?
+        
+          Yes, Docker is application centric because it allows you to run container that handles a perticular application in its own environment
+
+3. What is  docker hub?
+
+        Docker Hub is storage repository for images that allows pull and push. You can push to store images in the hub and pull  to download images from the hub.
+
+4. Can we write compose file in json instead of yaml?
+
+      Yes, we can write the compose file in json since yaml is a superset of json. Hence, any json file is a valid yaml and can be read by yaml
+
+5.  Can we run multiple apps  on one server with Docker?
+
+     Yes, we can run multiple apps on one server since we can have multiple different containers running on a server all managed by docker daemon. Since each container run a single app and we can run multiple containers on a server, multiple apps can run on a host server.
+
+
+6. WHAT ARE THE MOST USECASES OF DOCKER?
+    Docker Key use cases:
+    1. Simplifying COnfiguration
+    2. Code 
+    
+    

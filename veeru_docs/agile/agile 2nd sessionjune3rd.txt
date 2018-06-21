@@ -1,0 +1,48 @@
+Agile 2nd session(3rd june 2018):
+
+agenda of the session:
+1. agile methods break tasks into small increments with minimal planning and do not directly involve long-term plannnign.
+2. team menbers normslly tske responsibility for tasks that deivery 
+
+principles:
+
+close and daily cooperation between business people and developers 
+face to face conversation is the best form of communiction (co-location)
+projects ar built around motivated individualss who should be trusted 
+#simplicity
+#self organizing teams
+
+
+
+agile methods:
+
+sccrum framework(is most  ppopular)
+kaanbaan framework
+
+
+=>agile vs scrum
+
+agile is philosophy and scrum is practice
+
+
+1.   releases or iteration:  a time frame where we do analysis , design test and deploy.
+2. releases can frther can break down to sprints.
+        in each sprint we do analysis, design dev, test - end of each spirnt code will deployed to uat server maynot be deployed to live environmet 
+
+
+
+
+as a team before starting of each release or each iteration scrumteam participates in iteration planning meating to identify itreation backlog
+
+
+
+who is responisible to select iteration 1 backlog?
+
+ans: scrum team
+
+
+
+
+how jira can be used as " agile project tool"
+
+

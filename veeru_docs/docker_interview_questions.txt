@@ -1,0 +1,50 @@
+What is Docker?
+What is the difference between Docker image and Docker container?
+How will you remove an image from Docker?
+How is a Docker container different from a hypervisor?
+Can we write compose file in json file instead of yaml?
+Can we run multiple apps on one server with Docker?
+What are the common use cases of Docker?
+What are the main features of Docker-compose?
+What is the most popular use of Docker?
+What is the role of open source development in the popularity of Docker?
+What is the difference between Docker commands: up, run and start?
+What is Docker Swarm?
+What are the features of Docker Swarm?
+What is a Docker Image?
+What is a Docker Container?
+What is Docker Machine?
+Why do we use Docker Machine?
+How will you create a Container in Docker?
+Do you think Docker is Application-centric or Machine-centric?
+Can we lose our data when a Docker Container exits?
+Can we run more than one process in a Docker container?
+What are the objects created by Docker Cloud in Amazon Web Services (AWS) EC2?
+How will you take backup of Docker container volumes in AWS S3?
+What are the three main steps of Docker Compose?
+What is Pluggable Storage Driver architecture in Docker based containers?
+What is Docker Hub?
+What are the main features of Docker Hub?
+What are the main security concerns with Docker based containers?
+What are the security benefits of using Container based system?
+How can we check the status of a Container in Docker?
+What are the main benefits of using Docker?
+How does Docker simplify Software Development process?
+What is the basic architecture behind Docker?
+What are the popular tasks that you can do with Docker Command line tool?
+What type of applications- Stateless or Stateful are more suitable for Docker Container?
+How can Docker run on different Linux distributions?
+Why do we use Docker on top of a virtual machine?
+How can Docker container share resources?
+What is the difference between Add and Copy command in a Dockerfile?
+What is Docker Entrypoint?
+What is ONBUILD command in Docker?
+What is Build cache in Docker?
+What are the most common instructions in Dockerfile?
+What is the purpose of EXPOSE command in Dockerfile?
+What are the different kinds of namespaces available in a Container?
+How will you monitor Docker in production?
+What are the Cloud platforms that support Docker?
+How can we control the startup order of services in Docker compose?
+Why Docker compose does not wait for a container to be ready before moving on to start next service in dependency order?
+How will you customize Docker compose file for different environments?

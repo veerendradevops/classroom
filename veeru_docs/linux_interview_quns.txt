@@ -1,0 +1,15 @@
+1. how to terminate long running  process in linux?
+     https://www.tecmint.com/how-to-kill-a-process-in-linux/
+
+             Linux Operating System comes with Kill command to terminate a process. The command makes it possible to continue running the server without the need of reboot after a major change/update. Here comes the great power of Linux and this is one of the reasons, why Linux is running on 90% of servers, on the planet.
+
+             Kill command send a signal, a specified signal to be more perfect to a process. The kill command can be executed in a number of ways, directly or from a shell script.
+
+            Using kill command from /usr/bin provide you some extra feature to kill a process by process name using pkill. The common syntax for kill command is:
+
+........# kill [signal or option] PID(s)
+
+
+2.  WHAT DOES THE TOP COMMAND DO?
+
+           It allows you to see which processes running and how much resources they are using . You can actually sort based on memory by typing "M" or CPU by typing "p"

@@ -1,0 +1,40 @@
+stackoverflow.com/questions/11219678/apache-tomcat-installation-directory-in-ubuntu-configure-tomcat-in-eclipse-u
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java8-installer
+open commnad prompt and type this command :sudo gedit ~/.bashrc
+
+export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-amd64
+export JRE_HOME=/usr/lib/jvm/java-1.7.0-openjdk-amd64//jre
+export PATH=$PATH:$HOME/bin:JAVA_HOME:JRE_HOME
+export CATALINA_HOME=/home/ktsl-3f-11/Downloads/apache-tomcat-7.0.70
+
+source ~/.bashrc
+
+open commnad prompt and type this command :sudo gedit /etc/profile
+
+export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-amd64
+export JRE_HOME=/usr/lib/jvm/java-1.7.0-openjdk-amd64//jre
+export PATH=$PATH:$HOME/bin:JAVA_HOME:JRE_HOME
+export CATALINA_HOME=/home/ktsl-3f-11/Downloads/apache-tomcat-7.0.70
+
+. /etc/profile
+
+To see JAVA_HOME type this command:echo $JAVA_HOME
+To see JRE_HOME type this command:echo $JRE_HOME
+
+
+
+eclipse-->sudo gedit eclipse.desktop
+
+paste the follwing in that folder
+[Desktop Entry]
+Name=Eclipse
+Name[en]=Eclipse
+Comment=Integrated Development Environment
+Type=Application
+Exec=/home/ktsl-3f-11/Downloads/eclipse/eclipse
+Icon=/home/ktsl-3f-11/Downloads/eclipse/icon.xpm
+Terminal=False
+NoDisplay=False
+Categories=Development;IDE

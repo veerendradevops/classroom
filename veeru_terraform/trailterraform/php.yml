@@ -1,0 +1,27 @@
+---
+- name: installing php
+  apt: 
+    name: {{item}} 
+    state: present 
+    update_cache: yes
+  become: yes
+  with_items:
+    - php
+    - php-mysql
+    - mysql
+    - php-gd
+    - php-pdo
+    - git
+    - httpd
+    - git: repo=https://github.com/demoglot/php.git dest=/var/www/html/
+    # Set SELinux in permissive mode
+- name: set selinux permissive mode
+  selinux:
+    policy: targeted
+    state: permissive
+    # start the httpd service as shown below
+- name: start httpd
+  service:
+    name: http
+    state: started
+    enabled: yes

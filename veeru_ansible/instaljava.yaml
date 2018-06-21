@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: install openjdk 8
+    apt:
+      name: java-1.8.0-openjdk.x86_64
+      state: present 

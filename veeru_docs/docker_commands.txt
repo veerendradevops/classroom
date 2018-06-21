@@ -1,0 +1,10 @@
+1. TO GET INTO THE CONTAINER
+sudo docker run -it --entrypoint /bin/bash <container-name>
+                     OR
+docker run -it <container-name> /bin/bash
+                    OR
+docker start -i <conainer name> ->> to start and get into stopped container
+
+2. TO GET IP ADDRESS OF THE CONTAINER
+  docker inspect <container id> | grep "IPAddress"
+

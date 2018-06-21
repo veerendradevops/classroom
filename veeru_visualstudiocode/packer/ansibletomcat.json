@@ -1,0 +1,7 @@
+{
+    "type": "amazon-ebs",
+    "access_key":"",
+    "secret_key":"",
+    "region": "us-west-2",
+    "source_ami": ""
+}

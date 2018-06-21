@@ -1,0 +1,62 @@
+resource "aws_instance" "server1" {
+  ami                    = "ami-a4dc46db"
+  instance_type          = "t2.micro"
+  key_name               = "terraform"
+  vpc_security_group_ids = ["${aws_security_group.web_server.id}"]
+
+  tags {
+    Name = "server1"
+  }
+
+  provisioner "local-exec" {
+    command = "sleep 2m; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u ubuntu --private-key ./terraform.pem -i '${aws_instance.server1.public_ip},' php.yml"
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      user        = "ubuntu"
+      host        = "${aws_instance.server.public_ip}"
+      private_key = "${file(var.private_key_path)}"
+    }
+
+    inline = ["sudo mysql -h ${element(split(":", aws_db_instance.database.endpoint), 0)} -u veeru -p veeru &lt; /var/www/html/db.sql",
+      "sudo sed -i 's/192.168.1.10/${element(split(":", aws_db_instance.database.endpoint), 0)}/' /var/www/html/db.properties",
+      "sudo sed -i 's/mediauser/veeru/' /var/www/html/db.properties",
+      "sudo sed -i 's/Ne0aP1p2PHE9s/veeru/' /var/www/html/db.properties",
+      "sudo systemctl restart httpd",
+    ]
+  }
+}
+
+
+resource "aws_elb" "web" {
+  name               = "elastic"
+  security_groups    = ["${aws_security_group.web_server.id}"]
+  availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1e"]
+
+  listener {
+    instance_port     = 80
+    instance_protocol = "http"
+    lb_port           = 80
+    lb_protocol       = "http"
+  }
+
+  health_check {
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
+    timeout             = 3
+    target              = "HTTP:80/"
+    interval            = 30
+  }
+
+  instances                   = ["${aws_instance.server.id}"]
+  instances                   = ["${aws_instance.server1.id}"]
+  cross_zone_load_balancing   = true
+  idle_timeout                = 400
+  connection_draining         = true
+  connection_draining_timeout = 400
+
+  tags {
+    Name = "terra-elb"
+  }
+}

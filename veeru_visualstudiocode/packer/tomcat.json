@@ -1,0 +1,41 @@
+{
+    "variables":
+    
+        {
+        "region":"us-east-1",
+        "access":"",
+        "secret":""
+        }
+    ,
+    "builders":
+    [
+        {
+            "type":"amazon-ebs",         
+            "region":"{{user `region`}}",
+            "access_key":"{{user `access`}}",
+            "secret_key":"{{user `secret`}}",
+            "source_ami":"ami-a4dc46db",
+            "instance_type": "t2.micro",
+            "ssh_username":"ubuntu",
+            "ami_name":"ansible {{timestamp}}"
+        }
+    ],
+    "provisioners":
+    [
+        {
+            "type": "shell",
+            "inline":
+            [
+                "sudo  apt-add-repository ppa:ansible/ansible",
+                "sudo apt-get update",
+                "sudo apt-get install ansible -y",
+                "sudo chmod 777 /etc/ansible/hosts",
+                "sudo echo 'localhost ansible_connection=local' >> /etc/ansible/hosts",
+                "wget https://github.com/veerendradevops/veerndrarepo/blob/master/nginx.yml",
+                "sudo ansible-playbook -i /etc/ansible/hosts nginx.yml"
+            ]
+
+        }
+       
+    ]
+}

@@ -1,0 +1,259 @@
+ansible playbook:
+
+- name: installing php
+  yum: name={{ item }} state=present update_cache=yes
+  become: yes
+  with_items:
+    - php
+    - php-mysql
+    - mysql
+    - php-gd
+    - php-pdo
+    - git
+    - httpd
+    - git: repo=https://github.com/demoglot/php.git dest=/var/www/html/
+# Set SELinux in permissive mode.
+- name: set selinux permissive 
+  selinux: policy=targeted state=permissive
+# start the httpd service as shown below
+- name: start httpd 
+  service: name=httpd state=started enabled=yes
+
+
+                                                       twotier.tf:
+
+
+
+provider "aws" {
+ access_key = "your access"
+  secret_key = "secret key"
+  region     = "us-east-1"
+}
+ 
+resource "aws_security_group" "web_server" {
+  name        = "web_server"
+  description = "Used in the terraform"
+ 
+  # SSH access from anywhere
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+ 
+  # HTTP access from anywhere
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+ 
+  # outbound internet access
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+ 
+ 
+resource "aws_security_group" "rds_sg" {
+  name = "rds-security-group"
+ 
+  ingress {
+    protocol    = "tcp"
+    from_port   = 3306
+    to_port     = 3306
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+ 
+  egress {
+    protocol    = -1
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+ 
+resource "aws_db_instance" "database" {
+  allocated_storage      = 10
+  storage_type           = "gp2"
+  engine                 = "mysql"
+  engine_version         = "5.7"
+  instance_class         = "db.t2.micro"
+  username               = "tadaay"
+  password               = "default123"
+  parameter_group_name   = "default.mysql5.7"
+  vpc_security_group_ids = ["${aws_security_group.rds_sg.id}"]
+  skip_final_snapshot    = true
+}
+ 
+resource "aws_instance" "server" {
+  ami                    = "ami-b81dbfc5"
+  instance_type          = "t2.micro"
+  key_name               = "aws_key"
+  vpc_security_group_ids = ["${aws_security_group.web_server.id}"]
+ 
+  tags {
+    Name = "server"
+  }
+ 
+ provisioner "local-exec" {
+    command = "sleep 2m; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u centos --private-key /etc/ansible/aws.pem -i '${aws_instance.server.public_ip},' php.yml"
+  }
+ 
+provisioner "remote-exec" {
+    connection {
+      user        = "centos"
+      host        = "${aws_instance.server.public_ip}"
+      private_key = "${file("/etc/ansible/aws.pem")}"
+    }
+ 
+    inline = ["sudo mysql -h ${element(split(":", aws_db_instance.database.endpoint), 0)} -u tadaay -pdefault123 &lt; /var/www/html/db.sql",
+      "sudo sed -i 's/192.168.1.10/${element(split(":", aws_db_instance.database.endpoint), 0)}/' /var/www/html/db.properties",
+"sudo sed -i 's/mediauser/tadaay/' /var/www/html/db.properties",
+         "sudo sed -i 's/Ne0aP1p2PHE9s/default123/' /var/www/html/db.properties",
+           "sudo systemctl restart httpd",
+    ]
+  }
+}
+ 
+resource "aws_instance" "server1" {
+  ami                    = "ami-b81dbfc5"
+  instance_type          = "t2.micro"
+  key_name               = "aws_key"
+  vpc_security_group_ids = ["${aws_security_group.web_server.id}"]
+ 
+  tags {
+    Name = "server1"
+  }
+  provisioner "local-exec" {
+    command = "sleep 2m; ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u centos --private-key /etc/ansible/aws.pem -i '${aws_instance.server1.public_ip},' php.yml"
+  }
+ 
+ 
+provisioner "remote-exec" {
+    connection {
+      user        = "centos"
+      host        = "${aws_instance.server1.public_ip}"
+      private_key = "${file("/etc/ansible/aws.pem")}"
+    }
+ 
+    inline = ["sudo mysql -h ${element(split(":", aws_db_instance.database.endpoint), 0)} -u tadaay -pdefault123 &lt; /var/www/html/db.sql",
+      "sudo sed -i 's/192.168.1.10/${element(split(":", aws_db_instance.database.endpoint), 0)}/' /var/www/html/db.properties",
+"sudo sed -i 's/mediauser/tadaay/' /var/www/html/db.properties",
+         "sudo sed -i 's/Ne0aP1p2PHE9s/default123/' /var/www/html/db.properties",
+           "sudo systemctl restart httpd",
+    ]
+  }
+}
+ 
+resource "aws_elb" "web" {
+  name               = "elastic"
+  security_groups    = ["${aws_security_group.web_server.id}"]
+  availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c","us-east-1d","us-east-1e"]
+ 
+  listener {
+    instance_port     = 80
+    instance_protocol = "http"
+    lb_port           = 80
+    lb_protocol       = "http"
+  }
+ 
+  health_check {
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
+    timeout             = 3
+    target              = "HTTP:80/"
+    interval            = 30
+  }
+ 
+  instances                   = ["${aws_instance.server.id}"]
+  instances                   = ["${aws_instance.server1.id}"]
+  cross_zone_load_balancing   = true
+  idle_timeout                = 400
+  connection_draining         = true
+  connection_draining_timeout = 400
+ 
+  tags {
+    Name = "terra-elb"
+  }
+}
+ 
+:wq!
+ 
+
+Terraform init
+
+[root@localhost ansible]# terraform init
+1
+[root@localhost ansible]# terraform init
+ 
+
+Initializing provider plugins...
+
+The following providers do not have any version constraints in configuration,
+so the latest version was installed.
+
+To prevent automatic upgrades to new major versions that may contain breaking
+changes, it is recommended to add version = "..." constraints to the
+corresponding provider blocks in configuration, with the constraint strings
+suggested below.
+
+* provider.aws: version = "~> 1.17"
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+Initializing provider plugins...
+ 
+The following providers do not have any version constraints in configuration,
+so the latest version was installed.
+ 
+To prevent automatic upgrades to new major versions that may contain breaking
+changes, it is recommended to add version = "..." constraints to the
+corresponding provider blocks in configuration, with the constraint strings
+suggested below.
+ 
+* provider.aws: version = "~> 1.17"
+ 
+Terraform has been successfully initialized!
+ 
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+ 
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+

@@ -1,0 +1,71 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+"Description": "creating EC2 machines",
+"Parameters":
+{
+    
+    "mykeypair": {
+        "Description": "Amazon EC2 keypair",
+        "Type":"AWS::EC2::KeyPair::KeyName"
+    },
+    
+    
+    "imageid": {
+        "Description": "ubuntu 14.04",
+        "Type":"String",
+        "Default": "ami-9f086de0"
+    },
+    
+    "instancetype": {
+        "Type":"String",
+        "Default": "t2.micro"
+    },
+    
+    "securitygroup": {
+        "Description": "ports open",
+        "Type": "String",
+       "Default": "sg-0f2aea6202e9c5a59"
+    }
+    
+    
+    },
+    
+    
+    
+
+"Resources":
+{
+    
+    "appserver": {
+        "Type": "AWS::EC2::Instance",
+        "Properties": {
+            "KeyName":
+            { "Ref": "mykeypair" }
+            ,
+            "ImageId": 
+            { "Ref":"imageid" }
+            ,
+            "InstanceType":
+            { "Ref": "instancetype" }
+            ,
+            "SecurityGroupIds" :
+          [  { "Ref": "securitygroup" }]
+            ,
+           
+            "UserData": {
+                "Fn::Base64": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "#!/bin/bash -ex",
+                            "sudo apt-get update",
+                            "sudo apt-get install tomcat7"
+                        ]
+                    ]
+                }
+            }
+    }
+            }
+            
+}
+}
